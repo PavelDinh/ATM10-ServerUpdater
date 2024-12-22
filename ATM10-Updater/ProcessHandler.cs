@@ -5,15 +5,13 @@ namespace ATM10Updater
 {
     internal class ProcessHandler(IOptions<ServerInfo> serverInfo) : IProcessHandler
     {
-        private readonly string filePath = Path.Combine(Environment.GetEnvironmentVariable(serverInfo.Value.EnvironmentName, EnvironmentVariableTarget.User)!, serverInfo.Value.StartFile);
-        
         public async Task RunProcess()
         {
             await Task.Run(() =>
             {
                 var processStartInfo = new ProcessStartInfo
                 {
-                    FileName = filePath,
+                    FileName = Path.Combine(Environment.GetEnvironmentVariable(serverInfo.Value.EnvironmentName, EnvironmentVariableTarget.User)!, serverInfo.Value.StartFile),
                     UseShellExecute = true // Allow the process to run independently
                 };
 
@@ -29,7 +27,7 @@ namespace ATM10Updater
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = filePath,
+                    FileName = Path.Combine(Environment.GetEnvironmentVariable(serverInfo.Value.EnvironmentName, EnvironmentVariableTarget.User)!, serverInfo.Value.StartFile),
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,

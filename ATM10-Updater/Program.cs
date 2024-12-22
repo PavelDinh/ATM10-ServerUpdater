@@ -30,6 +30,8 @@ internal class Program
         services.AddSingleton<IProcessHandler, ProcessHandler>();
         services.AddSingleton<IBackupHandler, BackupHandler>();
         services.AddSingleton<IDiscordHandler, DiscordHandler>();
+        services.AddSingleton<IFileDownloader, FileDownloader>();
+        services.AddSingleton<IModpackService, ModpackService>();
         
         var provider = services.BuildServiceProvider();
         var runner = provider.GetRequiredService<IUpdateRunner>();

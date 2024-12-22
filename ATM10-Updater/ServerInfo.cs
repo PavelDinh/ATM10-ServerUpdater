@@ -1,6 +1,6 @@
 ﻿namespace ATM10Updater
 {
-    internal class ServerInfo
+    public class ServerInfo
     {
         public string LocalServerFolder { get; set; } = string.Empty;
 

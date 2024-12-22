@@ -27,7 +27,7 @@ namespace DiscordWebhookMessanger
 
             var client = new DiscordWebhookClient(discordInfo.Value.WebhookUrl);
 
-            var embedField = string.IsNullOrEmpty(customDomain) ? new DiscordMessageEmbedField("Public Server IP : ", $"{customDomain}:25566") : new("");
+            var embedField = !string.IsNullOrEmpty(customDomain) ? new DiscordMessageEmbedField("Public Server IP : ", $"{customDomain}:25566") : new("");
 
             // Create your DiscordMessage with all parameters of your message.
             var message = new DiscordMessage(

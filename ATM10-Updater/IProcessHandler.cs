@@ -1,6 +1,6 @@
 ﻿namespace ATM10Updater
 {
-    internal interface IProcessHandler
+    public interface IProcessHandler
     {
         Task StartWarmupProcess();
 
