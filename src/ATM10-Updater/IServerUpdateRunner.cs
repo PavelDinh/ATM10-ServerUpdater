@@ -1,6 +1,6 @@
 ﻿namespace ATM10Updater
 {
-    internal interface IUpdateRunner
+    internal interface IServerUpdateRunner
     {
         Task RunAsync();
     }

@@ -1,7 +1,6 @@
-﻿using CurseForgeAPI;
-using System.Text.Json;
+﻿using System.Text.Json;
 
-namespace ATM10Updater
+namespace ATM10Updater.Services
 {
     public interface IModpackService
     {

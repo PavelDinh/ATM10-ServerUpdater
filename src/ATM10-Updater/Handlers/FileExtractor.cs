@@ -1,6 +1,6 @@
 ﻿using System.IO.Compression;
 
-namespace ATM10Updater
+namespace ATM10Updater.Handlers
 {
     public static class FileExtractor
     {

@@ -1,4 +1,4 @@
-﻿namespace ATM10Updater
+﻿namespace ATM10Updater.Handlers
 {
     public class FileDownloader(HttpClient client) : IFileDownloader
     {

@@ -1,24 +1,28 @@
-﻿using CurseForgeAPI;
+﻿using ATM10Updater.Config;
+using ATM10Updater.Handlers;
+using ATM10Updater.Providers;
+using ATM10Updater.Services;
+using CurseForgeAPI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace ATM10Updater
+namespace ATM10Updater.Managers
 {
-    public class ServerInstallHandler(ILogger<ServerInstallHandler> logger,
+    public class ServerInstaller(ILogger<ServerInstaller> logger,
                                        IOptions<ModpackInfo> modpackInfo,
                                        IOptions<ServerInfo> serverInfo,
                                        IFileDownloader fileDownloader,
                                        IModpackService modpackService,
-                                       IProcessHandler processHandler) : IServerInstallHandler
+                                       IServerProcessStartup processHandler) : IServerInstaller
     {
-        public async Task<bool> InstallServer()
+        public async Task<bool> Install()
         {
             try
             {
                 var modFilesJson = await modpackService.GetModFilesAsync(modpackInfo.Value.ModId);
 
-                var (latestVersion, serverId) = VersionHandler.GetLatestVersionAndServerId(modFilesJson);
-                var currentVersion = VersionHandler.GetCurrentVersion(serverInfo.Value.LocalServerFolder, serverInfo.Value.NamingConvention);
+                var (latestVersion, serverId) = ServerVersionProvider.GetLatestVersionAndServerId(modFilesJson);
+                var currentVersion = ServerVersionProvider.GetCurrentVersion(serverInfo.Value.LocalServerFolder, serverInfo.Value.NamingConvention);
 
                 if (currentVersion >= latestVersion)
                 {

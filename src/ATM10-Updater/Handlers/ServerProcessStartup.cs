@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Options;
+﻿using ATM10Updater.Config;
+using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
-namespace ATM10Updater
+namespace ATM10Updater.Handlers
 {
-    internal class ProcessHandler(IOptions<ServerInfo> serverInfo) : IProcessHandler
+    public class ServerProcessStartup(IOptions<ServerInfo> serverInfo) : IServerProcessStartup
     {
-        public async Task RunProcess()
+        public async Task StartProcess()
         {
             await Task.Run(() =>
             {

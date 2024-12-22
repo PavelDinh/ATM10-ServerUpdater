@@ -1,24 +1,26 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using ATM10Updater.Config;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace ATM10Updater
+namespace ATM10Updater.Managers
 {
-    internal class BackupHandler(ILogger<BackupHandler> logger, IOptions<ServerInfo> serverInfo) : IBackupHandler
+    public class ServerBackupManager(ILogger<ServerBackupManager> logger,
+        IOptions<ServerInfo> serverInfo)
+        : IServerBackupManager
     {
-        private readonly string latestServerFolder = Environment.GetEnvironmentVariable(serverInfo.Value.EnvironmentName, EnvironmentVariableTarget.User)!;
-
         public async Task LoadBackupAsync()
         {
+            var latestServerFolder = Environment.GetEnvironmentVariable(serverInfo.Value.EnvironmentName, EnvironmentVariableTarget.User)!;
             var olderServerFolders = Directory.GetDirectories(serverInfo.Value.LocalServerFolder, $"{serverInfo.Value.NamingConvention}*");
             olderServerFolders = olderServerFolders.OrderByDescending(x => Version.Parse(x.Split('-').Last())).Skip(1).ToArray();
 
-            if (olderServerFolders == null || !olderServerFolders.Any())
+            if (olderServerFolders == null || olderServerFolders.Length == 0)
             {
                 // Accept eula
                 var eulaTxtPath = $"{latestServerFolder}\\eula.txt";
-                string eulaContent = System.IO.File.ReadAllText(eulaTxtPath);
+                string eulaContent = File.ReadAllText(eulaTxtPath);
                 var acceptedEula = eulaContent.Replace("eula=false", "eula=true");
-                System.IO.File.WriteAllText(eulaTxtPath, acceptedEula);
+                File.WriteAllText(eulaTxtPath, acceptedEula);
 
                 return;
             }
@@ -30,7 +32,7 @@ namespace ATM10Updater
                 var newDestFile = Path.Combine(latestServerFolder, content);
                 try
                 {
-                    if (System.IO.File.GetAttributes(oldFile).HasFlag(FileAttributes.Directory))
+                    if (File.GetAttributes(oldFile).HasFlag(FileAttributes.Directory))
                     {
                         if (string.IsNullOrWhiteSpace(oldFile))
                         {

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using CurseForgeAPI;
 
-namespace ATM10Updater
+namespace ATM10Updater.Services
 {
     public class ModpackService(ICurseForgeClient curseForgeClient) : IModpackService
     {

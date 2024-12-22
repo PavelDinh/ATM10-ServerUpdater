@@ -1,4 +1,4 @@
-﻿namespace ATM10Updater
+﻿namespace ATM10Updater.Config
 {
     public class ServerInfo
     {

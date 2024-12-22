@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 
-namespace ATM10Updater
+namespace ATM10Updater.Providers
 {
-    public static class VersionHandler
+    public static class ServerVersionProvider
     {
         public static (Version version, int serverId) GetLatestVersionAndServerId(JsonDocument modFilesJson)
         {
