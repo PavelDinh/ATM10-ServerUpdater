@@ -4,6 +4,7 @@ Supports only Windows, .NET 8, Visual Studio 2022
 * Simple Minecraft modpack ATM10 server updater.
 * Automatically downloads latest version and setup ATM10 server to run.
 * Support backup from previous versions.
+* Support for Discord notifications when new server version was installed.
 
 ## Setup
 Build the project on your server machine.
