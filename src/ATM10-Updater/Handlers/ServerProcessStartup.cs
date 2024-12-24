@@ -6,13 +6,13 @@ namespace ATM10Updater.Handlers
 {
     public class ServerProcessStartup(IOptions<ServerInfo> serverInfo) : IServerProcessStartup
     {
-        public async Task StartProcess()
+        public async Task StartProcessAsync()
         {
             await Task.Run(() =>
             {
                 var processStartInfo = new ProcessStartInfo
                 {
-                    FileName = Path.Combine(Environment.GetEnvironmentVariable(serverInfo.Value.EnvironmentName, EnvironmentVariableTarget.User)!, serverInfo.Value.StartFile),
+                    FileName = Path.Combine(Environment.GetEnvironmentVariable(serverInfo.Value.ServerFileEnv, EnvironmentVariableTarget.User)!, serverInfo.Value.StartFile),
                     UseShellExecute = true // Allow the process to run independently
                 };
 
@@ -20,7 +20,7 @@ namespace ATM10Updater.Handlers
             });
         }
 
-        public async Task StartWarmupProcess()
+        public async Task StartWarmupProcessAsync()
         {
             using var cts = new CancellationTokenSource();
 
@@ -28,7 +28,7 @@ namespace ATM10Updater.Handlers
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = Path.Combine(Environment.GetEnvironmentVariable(serverInfo.Value.EnvironmentName, EnvironmentVariableTarget.User)!, serverInfo.Value.StartFile),
+                    FileName = Path.Combine(Environment.GetEnvironmentVariable(serverInfo.Value.ServerFileEnv, EnvironmentVariableTarget.User)!, serverInfo.Value.StartFile),
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -82,7 +82,7 @@ namespace ATM10Updater.Handlers
             try
             {
                 string line;
-                while ((line = await reader.ReadLineAsync()) != null)
+                while ((line = await reader.ReadLineAsync(token)) != null)
                 {
                     Console.WriteLine(line);
 

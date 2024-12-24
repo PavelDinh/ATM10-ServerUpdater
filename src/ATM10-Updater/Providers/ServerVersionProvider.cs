@@ -1,28 +1,36 @@
-﻿using System.Text.Json;
+﻿using ATM10Updater.Config;
+using Microsoft.Extensions.Options;
 
 namespace ATM10Updater.Providers
 {
-    public static class ServerVersionProvider
+    public class ServerVersionProvider(IOptions<ServerInfo> serverInfo, IServerMetadataProvider serverMetadataProvider)
+        : IServerVersionProvider
     {
-        public static (Version version, int serverId) GetLatestVersionAndServerId(JsonDocument modFilesJson)
+        private Version? currentVersion;
+        private Version? latestVersion;
+
+        public Version? GetLatestVersion()
         {
-            var dataArray = modFilesJson.RootElement.GetProperty("data");
-            if (dataArray.GetArrayLength() <= 0)
-                throw new Exception("No data content received from CurseForge API.");
+            if (latestVersion == null)
+            {
+                var metadata = serverMetadataProvider.GetMetadata();
+                latestVersion = ParseVersionFromFileName(Path.GetFileNameWithoutExtension(metadata.FileName));
+            }
 
-            var latestFile = dataArray[0];
-            var version = ParseVersionFromFileName(Path.GetFileNameWithoutExtension(latestFile.GetProperty("fileName").GetString())!);
-            var serverId = latestFile.GetProperty("serverPackFileId").GetInt32();
-
-            return (version, serverId);
+            return latestVersion;
         }
 
-        public static Version? GetCurrentVersion(string serverFolder, string namingConvention)
+        public Version? GetCurrentVersion()
         {
-            return Directory.GetDirectories(serverFolder, $"{namingConvention}*")
+            if (currentVersion == null)
+            {
+                currentVersion = Directory.GetDirectories(serverInfo.Value.LocalServerFolder, $"{serverInfo.Value.NamingConvention}*")
                 .Select(s => ParseVersionFromFileName(Path.GetFileName(s)))
                 .OrderByDescending(v => v)
                 .FirstOrDefault();
+            }
+
+            return currentVersion;
         }
 
         private static Version ParseVersionFromFileName(string fileName)

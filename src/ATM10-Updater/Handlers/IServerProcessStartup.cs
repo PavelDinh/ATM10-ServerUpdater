@@ -2,8 +2,8 @@
 {
     public interface IServerProcessStartup
     {
-        Task StartWarmupProcess();
+        Task StartWarmupProcessAsync();
 
-        Task StartProcess();
+        Task StartProcessAsync();
     }
 }

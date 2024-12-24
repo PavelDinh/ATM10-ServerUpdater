@@ -10,7 +10,7 @@ namespace ATM10Updater.Managers
     {
         public async Task LoadBackupAsync()
         {
-            var latestServerFolder = Environment.GetEnvironmentVariable(serverInfo.Value.EnvironmentName, EnvironmentVariableTarget.User)!;
+            var latestServerFolder = Environment.GetEnvironmentVariable(serverInfo.Value.ServerFileEnv, EnvironmentVariableTarget.User)!;
             var olderServerFolders = Directory.GetDirectories(serverInfo.Value.LocalServerFolder, $"{serverInfo.Value.NamingConvention}*");
             olderServerFolders = olderServerFolders.OrderByDescending(x => Version.Parse(x.Split('-').Last())).Skip(1).ToArray();
 

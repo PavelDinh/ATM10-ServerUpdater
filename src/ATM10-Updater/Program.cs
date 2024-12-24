@@ -2,7 +2,7 @@
 using ATM10Updater.Config;
 using ATM10Updater.Handlers;
 using ATM10Updater.Managers;
-using ATM10Updater.Services;
+using ATM10Updater.Providers;
 using CurseForgeAPI;
 using DiscordWebhookMessanger;
 using Microsoft.Extensions.Configuration;
@@ -35,8 +35,10 @@ internal class Program
         services.AddSingleton<IServerBackupManager, ServerBackupManager>();
         services.AddSingleton<IDiscordHandler, DiscordHandler>();
         services.AddSingleton<IFileDownloader, FileDownloader>();
-        services.AddSingleton<IModpackService, ModpackService>();
-        
+        services.AddSingleton<IServerVersionProvider, ServerVersionProvider>();
+        services.AddSingleton<IServerMetadataProvider, ServerMetadataProvider>();
+        services.AddSingleton<IFileExtractor, FileExtractor>();
+
         var provider = services.BuildServiceProvider();
         var runner = provider.GetRequiredService<IServerUpdateRunner>();
         await runner.RunAsync();

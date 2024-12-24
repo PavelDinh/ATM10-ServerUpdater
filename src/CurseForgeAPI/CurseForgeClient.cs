@@ -1,56 +1,61 @@
-﻿using Microsoft.Extensions.Options;
-using System.Text.Json;
+﻿using CurseForgeAPI.Exceptions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CurseForgeAPI
 {
-    public class CurseForgeClient : ICurseForgeClient, IDisposable
+    public class CurseForgeClient : ICurseForgeClient
     {
-        private readonly CurseForgeConfig config;
-
         private readonly HttpClient httpClient;
-        
-        public CurseForgeClient(IOptions<CurseForgeConfig> options, HttpClient httpClient)
-        {
-            config = options.Value;
-            this.httpClient = httpClient;
-            this.httpClient.DefaultRequestHeaders.Add("x-api-key", config.ApiKey);
-            this.httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            this.httpClient.BaseAddress = new Uri(config.Endpoint!);
-        }
+        private readonly ILogger<CurseForgeClient> logger;
 
-        public void Dispose()
+        public CurseForgeClient(ILogger<CurseForgeClient> logger, IOptions<CurseForgeConfig> options, IHttpClientFactory httpClientFactory)
         {
-            httpClient.Dispose();
-            GC.SuppressFinalize(this);
+            this.logger = logger;
+            httpClient = httpClientFactory.CreateClient(nameof(CurseForgeClient));
+            httpClient.DefaultRequestHeaders.Add("x-api-key", options.Value.ApiKey);
+            httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            httpClient.BaseAddress = new Uri(options.Value.Endpoint!);
         }
 
         public async Task<string> GetDownloadFileAsync(int modId, int fileId)
         {
-            var responseContent = await httpClient.GetAsync($"/v1/mods/{modId}/files/{fileId}/download-url").Result.Content.ReadAsStringAsync();
-            using var doc = JsonDocument.Parse(responseContent);
-            JsonElement root = doc.RootElement;
-
-            root.TryGetProperty("data", out JsonElement urlElement);
-
-            return urlElement.GetString()!;
+            return await SendRequestAsync($"/v1/mods/{modId}/files/{fileId}/download-url");
         }
 
         public async Task<string> GetMod(int modId)
         {
-            var response = await httpClient.GetAsync($"/v1/mods/{modId}");
-            return await response.Content.ReadAsStringAsync();
+            return await SendRequestAsync($"/v1/mods/{modId}");
         }
 
         public async Task<string> GetModFileChangelogAsync(int modId, int fileId)
         {
-            var response = await httpClient.GetAsync($"/v1/mods/{modId}/files/{fileId}/changelog");
-            return await response.Content.ReadAsStringAsync();
+            return await SendRequestAsync($"/v1/mods/{modId}/files/{fileId}/changelog");
         }
 
         public async Task<string> GetModFilesAsync(int modId)
         {
-            var response = await httpClient.GetAsync($"v1/mods/{modId}/files");
-            return await response.Content.ReadAsStringAsync();
+            return await SendRequestAsync($"/v1/mods/{modId}/files");
+        }
+
+        private async Task<string> SendRequestAsync(string url)
+        {
+            try
+            {
+                var response = await httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStringAsync();
+            }
+            catch (HttpRequestException ex)
+            {
+                logger.LogError(ex, "HTTP error while accessing: {Url}", url);
+                throw new CurseForgeApiException($"Failed to fetch data from {url}.", ex);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Unexpected error while accessing: {Url}", url);
+                throw;
+            }
         }
     }
 }

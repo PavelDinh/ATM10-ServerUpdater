@@ -8,7 +8,7 @@
 
         public string StartFile { get; set; } = string.Empty;
 
-        public string EnvironmentName { get; set; } = string.Empty;
+        public string ServerFileEnv { get; set; } = string.Empty;
 
         public List<string> BackupFiles { get; set; } = [];
 

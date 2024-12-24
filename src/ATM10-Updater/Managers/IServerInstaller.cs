@@ -2,6 +2,12 @@
 {
     public interface IServerInstaller
     {
-        Task<bool> Install();
+        /// <summary>
+        /// Downloads latest version of the modpack server files
+        /// </summary>
+        /// <returns>Path where it was downloaded</returns>
+        Task<string> InstallAsync();
+
+        bool IsNewVersionAvailable();
     }
 }
