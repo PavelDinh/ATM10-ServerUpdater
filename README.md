@@ -1,6 +1,8 @@
 # ATM10-ServerUpdater
-Supports only Windows, .NET 8, Visual Studio 2022
+* Supports only Windows, .NET 8, Visual Studio 2022
+* Keep in mind this app was intended for ATM10 server update purpose only, other modpacks may not work.
 
+## Features
 * Simple Minecraft modpack ATM10 server updater.
 * Automatically downloads latest version and setup ATM10 server to run.
 * Support backup from previous versions.
@@ -22,13 +24,13 @@ $(SolutionRoot)\\ATM10-ServerUpdater\src\ATM10-Updater\bin\Release\net8.0\ATM10U
 ```
 
 ## First time running
-Build and run ATM10Updater.
-Running first time will just install ATM10 latest server version and run it.
+* Build and run ATM10Updater.
+* Running first time will just install ATM10 latest server version and run it.
 
 ## Already have a server
-If you already running ATM10 server on your machine, the app will check for latest release and downloads it. 
-It will also copy world folder defined in configs to the new version as well.
-You can set it up in appsettings.json.
+* If you already running ATM10 server on your machine, the app will check for latest release and downloads it. 
+* It will also copy world folder defined in configs to the new version as well.
+* You can set it up in appsettings.json.
 
 appsettings.json
 ```json
@@ -52,5 +54,3 @@ appsettings.json
   "WebhookUrl": "<Discord Webhook URL>"
 }
 ```
-
-Keep in mind this app was intended for ATM10 server update purpose only, other modpacks may not work.
