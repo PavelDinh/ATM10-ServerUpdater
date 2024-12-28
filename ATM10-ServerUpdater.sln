@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATM10Updater", "src\ATM10-Updater\ATM10Updater.csproj", "{020C2C70-ED0E-4B5C-ADF3-DCBDA9F6CE49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurseForgeAPI", "src\CurseForgeAPI\CurseForgeAPI.csproj", "{50BBA49E-CFDA-49AB-A02A-D3B5A448D318}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordAPI", "src\DiscordWebhookMessanger\DiscordAPI.csproj", "{367EF332-3852-4147-8DCF-0A8968F0C83E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurseForgeAPI.Tests", "tests\CurseForgeAPI.Tests\CurseForgeAPI.Tests.csproj", "{032F6796-F8D9-4475-B583-7A10F96D90F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordAPITests", "tests\DiscordWebhookMessengerTests\DiscordAPITests.csproj", "{B13B8363-2845-4E17-B1C9-2FA4746DA2A4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{020C2C70-ED0E-4B5C-ADF3-DCBDA9F6CE49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{020C2C70-ED0E-4B5C-ADF3-DCBDA9F6CE49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{020C2C70-ED0E-4B5C-ADF3-DCBDA9F6CE49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{020C2C70-ED0E-4B5C-ADF3-DCBDA9F6CE49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50BBA49E-CFDA-49AB-A02A-D3B5A448D318}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50BBA49E-CFDA-49AB-A02A-D3B5A448D318}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50BBA49E-CFDA-49AB-A02A-D3B5A448D318}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50BBA49E-CFDA-49AB-A02A-D3B5A448D318}.Release|Any CPU.Build.0 = Release|Any CPU
+		{367EF332-3852-4147-8DCF-0A8968F0C83E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{367EF332-3852-4147-8DCF-0A8968F0C83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{367EF332-3852-4147-8DCF-0A8968F0C83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{367EF332-3852-4147-8DCF-0A8968F0C83E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{032F6796-F8D9-4475-B583-7A10F96D90F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{032F6796-F8D9-4475-B583-7A10F96D90F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{032F6796-F8D9-4475-B583-7A10F96D90F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{032F6796-F8D9-4475-B583-7A10F96D90F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B13B8363-2845-4E17-B1C9-2FA4746DA2A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B13B8363-2845-4E17-B1C9-2FA4746DA2A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B13B8363-2845-4E17-B1C9-2FA4746DA2A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B13B8363-2845-4E17-B1C9-2FA4746DA2A4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
