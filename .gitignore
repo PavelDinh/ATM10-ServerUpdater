@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 appsettings.dev.json
+/CurseForgeWebAPI/appsettings.Development.json
