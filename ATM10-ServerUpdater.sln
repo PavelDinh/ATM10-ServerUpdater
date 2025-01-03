@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurseForgeAPI.Tests", "test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordAPITests", "tests\DiscordWebhookMessengerTests\DiscordAPITests.csproj", "{B13B8363-2845-4E17-B1C9-2FA4746DA2A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurseForgeWebAPI", "CurseForgeWebAPI\CurseForgeWebAPI.csproj", "{C5F267D1-8960-4164-94D3-A68057CD121C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurseForgeWebAPI", "src\CurseForgeWebAPI\CurseForgeWebAPI.csproj", "{499DFB3C-7120-434D-A06E-05DDAF61DADF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,10 @@ Global
 		{B13B8363-2845-4E17-B1C9-2FA4746DA2A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B13B8363-2845-4E17-B1C9-2FA4746DA2A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B13B8363-2845-4E17-B1C9-2FA4746DA2A4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C5F267D1-8960-4164-94D3-A68057CD121C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C5F267D1-8960-4164-94D3-A68057CD121C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C5F267D1-8960-4164-94D3-A68057CD121C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C5F267D1-8960-4164-94D3-A68057CD121C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{499DFB3C-7120-434D-A06E-05DDAF61DADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{499DFB3C-7120-434D-A06E-05DDAF61DADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{499DFB3C-7120-434D-A06E-05DDAF61DADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{499DFB3C-7120-434D-A06E-05DDAF61DADF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
