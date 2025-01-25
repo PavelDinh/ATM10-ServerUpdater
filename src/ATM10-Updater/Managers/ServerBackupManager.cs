@@ -18,9 +18,9 @@ namespace ATM10Updater.Managers
             {
                 // Accept eula
                 var eulaTxtPath = $"{latestServerFolder}\\eula.txt";
-                string eulaContent = File.ReadAllText(eulaTxtPath);
+                string eulaContent = await File.ReadAllTextAsync(eulaTxtPath);
                 var acceptedEula = eulaContent.Replace("eula=false", "eula=true");
-                File.WriteAllText(eulaTxtPath, acceptedEula);
+                await File.WriteAllTextAsync(eulaTxtPath, acceptedEula);
 
                 return;
             }

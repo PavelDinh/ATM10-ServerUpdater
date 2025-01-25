@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\CurseForgeAPI\CurseForgeAPI.csproj" />
+    <ProjectReference Include="..\CurseForgeAPI\CurseForgeAPI.csproj" />
   </ItemGroup>
 
 </Project>

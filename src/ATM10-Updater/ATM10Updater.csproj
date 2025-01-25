@@ -33,8 +33,6 @@
   <ItemGroup>
     <ProjectReference Include="..\CurseForgeAPI\CurseForgeAPI.csproj" />
     <ProjectReference Include="..\DiscordWebhookMessanger\DiscordAPI.csproj" />
-    <ProjectReference Include="..\DiscordWebhookMessanger\DiscordWebhookMessanger.csproj" />
-    <ProjectReference Include="..\DiscordWebhookMessanger\DiscordWebhookMessenger.csproj" />
   </ItemGroup>
 
   <ItemGroup>
