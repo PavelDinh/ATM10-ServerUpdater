@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using ATM10Updater.Providers;
+using Microsoft.Extensions.Logging;
 using System.IO.Compression;
 
 namespace ATM10Updater.Handlers
 {
-    public class FileExtractor(ILogger<FileExtractor> logger)
+    public class FileExtractor(ILogger<FileExtractor> logger, 
+        IServerVersionProvider versionProvider)
         : IFileExtractor
     {
         /// <summary>
@@ -33,7 +35,7 @@ namespace ATM10Updater.Handlers
 
                 logger.LogInformation("Extraction completed successfully for ZIP file {ZipFilePath}", zipFilePath);
             }
-            catch (Exception ex)
+            catch (IOException ex)
             {
                 logger.LogError(ex, "An error occurred while extracting the ZIP file {ZipFilePath} to {DestinationFolder}", zipFilePath, destinationFolder);
                 throw;
@@ -112,6 +114,22 @@ namespace ATM10Updater.Handlers
             {
                 throw;
             }
+        }
+
+        public async Task ExtractAndRenameServerFolder(string downloadFilePath, string localServerFolder, string namingConvention)
+        {
+            await Task.Run(() =>
+            {
+                var extractFolder = DecideExtractFolderTarget(downloadFilePath, localServerFolder);
+
+                ExtractZipFile(downloadFilePath, extractFolder);
+
+                var latestVersionFolderName = namingConvention + versionProvider.GetLatestVersion()?.ToString()!;
+                var extractedTargetFolder = Path.Combine(Path.GetDirectoryName(downloadFilePath)!, Path.GetFileNameWithoutExtension(downloadFilePath));
+                RenameFolder(extractedTargetFolder, latestVersionFolderName, true);
+
+                File.Delete(downloadFilePath);
+            });
         }
     }
 }

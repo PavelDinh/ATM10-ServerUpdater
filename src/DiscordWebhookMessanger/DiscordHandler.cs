@@ -13,10 +13,10 @@ namespace DiscordAPI
         ICurseForgeClient curseForgeClient,
         IDiscordWebhookClientWrapperFactory discordWebhookClientFactory) : IDiscordHandler
     {
-        public async Task SendNotificationAsync(string customDomain = "")
+        public async Task SendNotificationAsync(string customDomain = "", int customPort = 25565)
         {
-            var embed = await ConstructEmbedAsync(customDomain);
-            if (embed != null && !string.IsNullOrEmpty(discordInfo.Value.WebhookUrl))
+            var embed = await ConstructEmbedAsync(customDomain, customPort);
+            if (embed != null && !string.IsNullOrEmpty(discordInfo.Value.WebhookUrl) && await IsWebhookValid(discordInfo.Value.WebhookUrl))
             {
                 using var client = discordWebhookClientFactory.Create(discordInfo.Value.WebhookUrl);
                 await client.SendMessageAsync(
@@ -28,7 +28,7 @@ namespace DiscordAPI
             }
         }
 
-        private async Task<Embed?> ConstructEmbedAsync(string customDomain = "")
+        private async Task<Embed?> ConstructEmbedAsync(string customDomain = "", int customPort = 25565)
         {
             if (string.IsNullOrEmpty(discordInfo.Value.WebhookUrl))
             {
@@ -57,10 +57,26 @@ namespace DiscordAPI
 
             if (!string.IsNullOrEmpty(customDomain))
             {
-                embedBuilder.AddField("Public Server IP :", customDomain);
+                embedBuilder.AddField("Public Server IP :", $"{customDomain}:{customPort}");
             }
 
             return embedBuilder.Build();
+        }
+
+        private static async Task<bool> IsWebhookValid(string webhookUrl)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Head, webhookUrl);
+            using var client = new HttpClient();
+            try
+            {
+                var response = await client.SendAsync(request);
+                return response.IsSuccessStatusCode;
+            }
+            catch (InvalidOperationException)
+            {
+                // Invalid URL
+                return false;
+            }
         }
     }
 }

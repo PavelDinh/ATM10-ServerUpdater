@@ -12,7 +12,7 @@ namespace ATM10Updater
         ILogger<ServerUpdateRunner> logger,
         IOptions<ServerConfig> serverInfo,
         IServerInstaller serverInstaller,
-        IServerProcessStartup processHandler,
+        IServerProcessHandler processHandler,
         IServerBackupManager backupHandler,
         IDiscordHandler discordHandler,
         IServerVersionProvider versionProvider,
@@ -21,13 +21,15 @@ namespace ATM10Updater
     {
         public async Task RunAsync()
         {
+            processHandler.EnsureProcessTerminated();
+
             if (serverInstaller.IsNewVersionAvailable())
-            {   
+            {
                 logger.LogInformation("Found new server version : {modpackName}{version}.", serverInfo.Value.NamingConvention, versionProvider.GetLatestVersion()!.ToString());
                 logger.LogInformation("Downloading latest server files.");
 
                 var downloadFilePath = await serverInstaller.InstallAsync();
-                await ExtractAndRenameServerFolder(downloadFilePath);
+                await fileExtractor.ExtractAndRenameServerFolder(downloadFilePath, serverInfo.Value.LocalServerFolder, serverInfo.Value.NamingConvention);
 
                 await processHandler.StartWarmupProcessAsync();
                 await backupHandler.LoadBackupAsync();
@@ -36,26 +38,7 @@ namespace ATM10Updater
 
             logger.LogInformation("Starting server.");
 
-            await processHandler.StartProcessAsync();
-        }
-
-        private async Task ExtractAndRenameServerFolder(string downloadFilePath)
-        {
-            await Task.Run(() =>
-            {
-                var extractFolder = fileExtractor.DecideExtractFolderTarget(downloadFilePath, serverInfo.Value.LocalServerFolder);
-
-                fileExtractor.ExtractZipFile(downloadFilePath, extractFolder);
-
-                var latestVersionFolderName = serverInfo.Value.NamingConvention + versionProvider.GetLatestVersion()?.ToString()!;
-                var extractedTargetFolder = Path.Combine(Path.GetDirectoryName(downloadFilePath)!, Path.GetFileNameWithoutExtension(downloadFilePath));
-                fileExtractor.RenameFolder(extractedTargetFolder, latestVersionFolderName, true);
-
-                var renameFolderPath = Path.Combine(serverInfo.Value.LocalServerFolder, latestVersionFolderName);
-                Environment.SetEnvironmentVariable(serverInfo.Value.ServerFileEnv, renameFolderPath, EnvironmentVariableTarget.User);
-
-                File.Delete(downloadFilePath);
-            });
+            processHandler.StartProcess();
         }
     }
 }

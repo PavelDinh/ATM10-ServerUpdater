@@ -7,5 +7,7 @@
         void RenameFolder(string targetFolder, string newName, bool overwrite = false);
 
         string DecideExtractFolderTarget(string zipFile, string defaultFolder);
+
+        Task ExtractAndRenameServerFolder(string downloadFilePath, string localServerFolder, string namingConvention);
     }
 }

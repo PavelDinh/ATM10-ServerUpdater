@@ -1,44 +1,49 @@
 ﻿using ATM10Updater.Config;
+using ATM10Updater.Providers;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
 namespace ATM10Updater.Handlers
 {
-    public class ServerProcessStartup(IOptions<ServerConfig> serverInfo) : IServerProcessStartup
+    public class ServerProcessHandler(
+        IOptions<ServerConfig> serverInfo,
+        IServerFileProvider serverFileProvider) : IServerProcessHandler
     {
-        public async Task StartProcessAsync()
-        {
-            await Task.Run(() =>
-            {
-                var processStartInfo = new ProcessStartInfo
-                {
-                    FileName = Path.Combine(Environment.GetEnvironmentVariable(serverInfo.Value.ServerFileEnv, EnvironmentVariableTarget.User)!, serverInfo.Value.StartFile),
-                    UseShellExecute = true // Allow the process to run independently
-                };
+        private readonly ServerConfig _serverConfig = serverInfo.Value;
+        private Process? _process;
 
-                Process.Start(processStartInfo);
-            });
+        public void StartProcess()
+        {
+            var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = Path.Combine(serverFiles.First(), _serverConfig.ServerRunFile),
+                WorkingDirectory = serverFiles.First(),
+                UseShellExecute = false
+            };
+
+            _process = Process.Start(processStartInfo);
         }
 
         public async Task StartWarmupProcessAsync()
         {
             using var cts = new CancellationTokenSource();
+            var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
 
-            var process = new Process
+            _process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = Path.Combine(Environment.GetEnvironmentVariable(serverInfo.Value.ServerFileEnv, EnvironmentVariableTarget.User)!, serverInfo.Value.StartFile),
+                    FileName = Path.Combine(serverFiles.First(), _serverConfig.ServerStartupFile),
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
-                    CreateNoWindow = false, // Setting false to run it in a separate window
                 },
                 EnableRaisingEvents = true
             };
 
             // Event handler for process exit
-            process.Exited += (sender, e) =>
+            _process.Exited += (sender, e) =>
             {
                 Console.WriteLine("Process exited.");
                 cts.Cancel(); // Cancel tracking if the process exits.
@@ -47,20 +52,20 @@ namespace ATM10Updater.Handlers
             try
             {
                 // Start the process
-                process.Start();
+                _process.Start();
 
                 // Start reading output asynchronously
-                var outputTask = MonitorOutputAsync(process.StandardOutput, "eula.txt", cts.Token);
-                var errorTask = MonitorOutputAsync(process.StandardError, "eula.txt", cts.Token);
+                var outputTask = MonitorOutputAsync(_process.StandardOutput, "eula.txt", cts.Token);
+                var errorTask = MonitorOutputAsync(_process.StandardError, "eula.txt", cts.Token);
 
                 // Wait for tasks to complete or process to exit
                 await Task.WhenAny(outputTask, errorTask);
 
                 // Kill the process if not already exited
-                if (!process.HasExited)
+                if (!_process.HasExited)
                 {
                     Console.WriteLine("Target text found. Terminating the process...");
-                    process.Kill();
+                    _process.Kill();
                 }
             }
             catch (Exception ex)
@@ -69,11 +74,40 @@ namespace ATM10Updater.Handlers
             }
             finally
             {
-                if (!process.HasExited)
+                if (!_process.HasExited)
                 {
-                    process.Kill();
+                    _process.Kill();
                 }
-                process.Dispose();
+                _process.Dispose();
+            }
+        }
+
+        public void EnsureProcessTerminated()
+        {
+            var processTerminating = false;
+            try
+            {
+                if (_process != null && !_process.HasExited)
+                {
+                    _process.Kill();
+                    _process.WaitForExit();
+                    _process.Dispose();
+                    processTerminating = true;
+                }
+
+                if (!processTerminating)
+                {
+                    foreach (var process in Process.GetProcessesByName("java"))
+                    {
+                        process.Kill();
+                        process.WaitForExit();
+                        process.CloseMainWindow();
+                    }
+                }
+            }
+            catch(InvalidOperationException)
+            {
+                // process has been disposed.
             }
         }
 

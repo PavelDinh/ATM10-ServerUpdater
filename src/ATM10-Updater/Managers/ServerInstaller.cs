@@ -22,7 +22,8 @@ namespace ATM10Updater.Managers
 
                 await fileDownloader.DownloadFileWithProgressAsync(downloadLink, downloadFilePath, progress =>
                 {
-                    logger.LogInformation("\rDownloaded {progress}", $"{progress:P2}");
+                    Console.Write($"Downloaded {progress:P2}");
+                    Console.Clear();
                 });
 
                 return downloadFilePath;
