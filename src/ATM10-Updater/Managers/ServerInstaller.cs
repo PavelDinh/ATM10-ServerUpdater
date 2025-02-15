@@ -13,18 +13,19 @@ namespace ATM10Updater.Managers
                                        IServerMetadataProvider metadataProvider)
         : IServerInstaller
     {
-        public async Task<string> InstallAsync()
+        public async Task<string> InstallAsync(CancellationToken token)
         {
             try
             {
-                var downloadLink = metadataProvider.GetMetadata().DownloadLink;
-                string downloadFilePath = Path.Combine(serverInfo.Value.LocalServerFolder, Path.GetFileName(downloadLink));
+                var metadata = await metadataProvider.GetMetadataAsync(token);
+                string downloadFilePath = Path.Combine(serverInfo.Value.LocalServerFolder, Path.GetFileName(metadata.DownloadLink));
 
-                await fileDownloader.DownloadFileWithProgressAsync(downloadLink, downloadFilePath, progress =>
+                await fileDownloader.DownloadFileWithProgressAsync(metadata.DownloadLink, downloadFilePath, progress =>
                 {
-                    Console.Write($"Downloaded {progress:P2}");
-                    Console.Clear();
-                });
+                    logger.LogInformation("\rDownloaded {progress} [{bytesTransferred} / {totalByts}] - {estimatedCompletionTime}", 
+                        $"{progress.ProgressPercentage:P2}", progress.BytesTransferred, progress.TotalBytes, progress.EstimatedTimeRemaining);
+                }, 
+                token);
 
                 return downloadFilePath;
             }

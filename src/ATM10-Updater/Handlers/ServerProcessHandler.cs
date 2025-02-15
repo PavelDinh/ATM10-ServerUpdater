@@ -14,6 +14,8 @@ namespace ATM10Updater.Handlers
 
         public void StartProcess()
         {
+            EnsureProcessTerminated();
+
             var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
             var processStartInfo = new ProcessStartInfo
             {
@@ -25,10 +27,17 @@ namespace ATM10Updater.Handlers
             _process = Process.Start(processStartInfo);
         }
 
-        public async Task StartWarmupProcessAsync()
+        public async Task StartWarmupProcessAsync(CancellationToken token)
         {
             using var cts = new CancellationTokenSource();
             var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
+
+            if (string.IsNullOrEmpty(_serverConfig.ServerStartupFile))
+            {
+                return;
+            }
+            
+            EnsureProcessTerminated();
 
             _process = new Process
             {

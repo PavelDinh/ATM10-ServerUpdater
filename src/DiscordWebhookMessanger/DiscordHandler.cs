@@ -13,9 +13,9 @@ namespace DiscordAPI
         ICurseForgeClient curseForgeClient,
         IDiscordWebhookClientWrapperFactory discordWebhookClientFactory) : IDiscordHandler
     {
-        public async Task SendNotificationAsync(string customDomain = "", int customPort = 25565)
+        public async Task SendNotificationAsync(CancellationToken token, string customDomain = "", int customPort = 25565)
         {
-            var embed = await ConstructEmbedAsync(customDomain, customPort);
+            var embed = await ConstructEmbedAsync(token, customDomain, customPort);
             if (embed != null && !string.IsNullOrEmpty(discordInfo.Value.WebhookUrl) && await IsWebhookValid(discordInfo.Value.WebhookUrl))
             {
                 using var client = discordWebhookClientFactory.Create(discordInfo.Value.WebhookUrl);
@@ -28,20 +28,20 @@ namespace DiscordAPI
             }
         }
 
-        private async Task<Embed?> ConstructEmbedAsync(string customDomain = "", int customPort = 25565)
+        private async Task<Embed?> ConstructEmbedAsync(CancellationToken token, string customDomain = "", int customPort = 25565)
         {
             if (string.IsNullOrEmpty(discordInfo.Value.WebhookUrl))
             {
                 return null;
             }
 
-            var content = await curseForgeClient.GetModAsync(modpackInfo.Value.ModId);
+            var content = await curseForgeClient.GetModAsync(modpackInfo.Value.ModId, token);
             var modInfoJson = JsonDocument.Parse(content);
             var dataArray = modInfoJson.RootElement.GetProperty("data").GetProperty("latestFiles");
             var title = dataArray[0].GetProperty("displayName").GetString();
             var id = dataArray[0].GetProperty("id").GetInt32();
 
-            var description = await curseForgeClient.GetModFileChangelogAsync(modpackInfo.Value.ModId, id);
+            var description = await curseForgeClient.GetModFileChangelogAsync(modpackInfo.Value.ModId, id, token);
             var changelogData = JsonDocument.Parse(description);
             var changelogContent = changelogData.RootElement.GetProperty("data").GetString();
 

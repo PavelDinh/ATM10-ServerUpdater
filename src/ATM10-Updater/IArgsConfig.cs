@@ -2,6 +2,6 @@
 {
     public interface IArgsConfig
     {
-        Task HandleArgsAsync(string[] args);
+        Task HandleArgsAsync(string[] args, CancellationToken token);
     }
 }

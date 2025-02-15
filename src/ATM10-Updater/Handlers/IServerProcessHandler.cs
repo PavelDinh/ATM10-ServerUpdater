@@ -2,7 +2,7 @@
 {
     public interface IServerProcessHandler
     {
-        Task StartWarmupProcessAsync();
+        Task StartWarmupProcessAsync(CancellationToken token);
 
         void StartProcess();
 

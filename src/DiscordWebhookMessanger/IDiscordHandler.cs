@@ -2,6 +2,6 @@
 {
     public interface IDiscordHandler
     {
-        Task SendNotificationAsync(string customDomain = "", int customPort = 25565);
+        Task SendNotificationAsync(CancellationToken token, string customDomain = "", int customPort = 25565);
     }
 }

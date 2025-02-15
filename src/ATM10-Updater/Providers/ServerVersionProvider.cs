@@ -11,13 +11,20 @@ namespace ATM10Updater.Providers
 
         public Version? GetLatestVersion()
         {
-            if (latestVersion == null)
+            try
             {
-                var metadata = serverMetadataProvider.GetMetadata();
-                latestVersion = ParseVersionFromFileName(Path.GetFileNameWithoutExtension(metadata.FileName));
-            }
+                if (latestVersion == null)
+                {
+                    var metadata = serverMetadataProvider.GetMetadata();
+                    latestVersion = ParseVersionFromFileName(Path.GetFileNameWithoutExtension(metadata.FileName));
+                }
 
-            return latestVersion;
+                return latestVersion;
+            }
+            catch (NullReferenceException)
+            {
+                throw;
+            }
         }
 
         public Version? GetCurrentVersion()

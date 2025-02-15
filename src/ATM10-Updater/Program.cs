@@ -72,13 +72,15 @@ var provider = services.BuildServiceProvider();
 
 provider.GetRequiredService<IServerProcessHandler>().EnsureProcessTerminated();
 
+using var cts = new CancellationTokenSource();
+
 if (args.Length > 0)
 {
     var argsConfig = provider.GetRequiredService<IArgsConfig>();
-    await argsConfig.HandleArgsAsync(args);
+    await argsConfig.HandleArgsAsync(args, cts.Token);
 }
 else
 {
     var runner = provider.GetRequiredService<IServerUpdateRunner>();
-    await runner.RunAsync();
+    await runner.RunAsync(cts.Token);
 }

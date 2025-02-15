@@ -19,33 +19,33 @@ namespace CurseForgeAPI
             httpClient.BaseAddress = new Uri(options.Value.Endpoint!);
         }
 
-        public async Task<string> GetDownloadFileAsync(int modId, int fileId)
+        public Task<string> GetDownloadFileAsync(int modId, int fileId, CancellationToken token)
         {
-            return await SendRequestAsync($"/v1/mods/{modId}/files/{fileId}/download-url");
+            return SendRequestAsync($"/v1/mods/{modId}/files/{fileId}/download-url", token);
         }
 
-        public async Task<string> GetModAsync(int modId)
+        public Task<string> GetModAsync(int modId, CancellationToken token)
         {
-            return await SendRequestAsync($"/v1/mods/{modId}");
+            return SendRequestAsync($"/v1/mods/{modId}", token);
         }
 
-        public async Task<string> GetModFileChangelogAsync(int modId, int fileId)
+        public Task<string> GetModFileChangelogAsync(int modId, int fileId, CancellationToken token)
         {
-            return await SendRequestAsync($"/v1/mods/{modId}/files/{fileId}/changelog");
+            return SendRequestAsync($"/v1/mods/{modId}/files/{fileId}/changelog", token);
         }
 
-        public async Task<string> GetModFilesAsync(int modId)
+        public Task<string> GetModFilesAsync(int modId, CancellationToken token)
         {
-            return await SendRequestAsync($"/v1/mods/{modId}/files");
+            return SendRequestAsync($"/v1/mods/{modId}/files", token);
         }
 
-        private async Task<string> SendRequestAsync(string url)
+        private async Task<string> SendRequestAsync(string url, CancellationToken token)
         {
             try
             {
-                var response = await httpClient.GetAsync(url);
+                var response = await httpClient.GetAsync(url, token);
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStringAsync();
+                return await response.Content.ReadAsStringAsync(token);
             }
             catch (HttpRequestException ex)
             {

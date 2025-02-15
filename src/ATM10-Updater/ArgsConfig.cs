@@ -1,32 +1,34 @@
 ﻿using ATM10Updater.Handlers;
 using ATM10Updater.Managers;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace ATM10Updater
 {
     public class ArgsConfig : IArgsConfig
     {
         private readonly ILogger<ArgsConfig> _logger;
-        private readonly Dictionary<string, Func<Task>> _argsCmd;
+        private readonly Dictionary<string, Func<CancellationToken, Task>> _argsCmd;
 
         public ArgsConfig(ILogger<ArgsConfig> logger, IServerProcessHandler processHandler, IServerBackupManager backupManager, IServerInstaller serverInstaller)
         {
             _logger = logger;
-            _argsCmd = new Dictionary<string, Func<Task>>
+            _argsCmd = new Dictionary<string, Func<CancellationToken, Task>>
                 {
-                    { "--start-server", new Func<Task>(() => { processHandler.StartProcess(); return Task.CompletedTask; }) },
-                    { "--load-backup", new Func<Task>(backupManager.LoadBackupAsync) },
-                    { "--install-server", new Func<Task<string>>(serverInstaller.InstallAsync) }
+                    { "--run-server", token => { processHandler.StartProcess(); return Task.CompletedTask; } },
+                    { "--run-warmup-process", processHandler.StartWarmupProcessAsync },
+                    { "--load-backup", backupManager.LoadBackupAsync },
+                    { "--install-server", serverInstaller.InstallAsync },
                 };
         }
 
-        public async Task HandleArgsAsync(string[] args)
+        public async Task HandleArgsAsync(string[] args, CancellationToken token)
         {
             foreach (var arg in args)
             {
                 if (_argsCmd.TryGetValue(arg, out var action))
                 {
-                    await action();
+                    await action(token);
                 }
                 else
                 {

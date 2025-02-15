@@ -34,10 +34,10 @@ namespace DiscordAPITests
             modpackInfoMock.Setup(x => x.Value).Returns(modpackInfo);
 
             var modResponse = "{\"data\":{\"latestFiles\":[{\"displayName\":\"Test Mod\",\"id\":67890}]}}";
-            curseForgeClientMock.Setup(x => x.GetModAsync(It.IsAny<int>())).ReturnsAsync(modResponse);
+            curseForgeClientMock.Setup(x => x.GetModAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(modResponse);
 
             var changelogResponse = "{\"data\":\"Test changelog content\"}";
-            curseForgeClientMock.Setup(x => x.GetModFileChangelogAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(changelogResponse);
+            curseForgeClientMock.Setup(x => x.GetModFileChangelogAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(changelogResponse);
 
             var webhookClientWrapperMock = new Mock<IDiscordWebhookClientWrapper>();
             webhookClientWrapperFactoryMock.Setup(x => x.Create(It.IsAny<string>())).Returns(webhookClientWrapperMock.Object);
@@ -49,7 +49,7 @@ namespace DiscordAPITests
                 webhookClientWrapperFactoryMock.Object);
 
             // Act
-            await discordHandler.SendNotificationAsync("test.example.com");
+            await discordHandler.SendNotificationAsync(It.IsAny<CancellationToken>(), "test.example.com");
 
             // Assert
             webhookClientWrapperMock.Verify(x => x.SendMessageAsync(
@@ -84,7 +84,7 @@ namespace DiscordAPITests
             webhookClientWrapperFactoryMock.Setup(x => x.Create(It.IsAny<string>())).Returns(webhookClientWrapperMock.Object);
 
             // Act
-            await discordHandler.SendNotificationAsync("test.example.com");
+            await discordHandler.SendNotificationAsync(It.IsAny<CancellationToken>(), "test.example.com");
 
             // Assert
             webhookClientWrapperMock.Verify(x => x.SendMessageAsync(

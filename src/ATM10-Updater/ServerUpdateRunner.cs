@@ -19,7 +19,7 @@ namespace ATM10Updater
         IFileExtractor fileExtractor)
         : IServerUpdateRunner
     {
-        public async Task RunAsync()
+        public async Task RunAsync(CancellationToken token)
         {
             processHandler.EnsureProcessTerminated();
 
@@ -28,12 +28,12 @@ namespace ATM10Updater
                 logger.LogInformation("Found new server version : {modpackName}{version}.", serverInfo.Value.NamingConvention, versionProvider.GetLatestVersion()!.ToString());
                 logger.LogInformation("Downloading latest server files.");
 
-                var downloadFilePath = await serverInstaller.InstallAsync();
+                var downloadFilePath = await serverInstaller.InstallAsync(token);
                 await fileExtractor.ExtractAndRenameServerFolder(downloadFilePath, serverInfo.Value.LocalServerFolder, serverInfo.Value.NamingConvention);
 
-                await processHandler.StartWarmupProcessAsync();
-                await backupHandler.LoadBackupAsync();
-                await discordHandler.SendNotificationAsync(serverInfo.Value.CustomDomain);
+                await processHandler.StartWarmupProcessAsync(token);
+                await backupHandler.LoadBackupAsync(token);
+                await discordHandler.SendNotificationAsync(token, serverInfo.Value.CustomDomain);
             }
 
             logger.LogInformation("Starting server.");

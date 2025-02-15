@@ -13,7 +13,7 @@ namespace ATM10Updater.Managers
     {
         private readonly ServerConfig _serverConfig = serverInfo.Value;
 
-        public async Task LoadBackupAsync()
+        public async Task LoadBackupAsync(CancellationToken token)
         {
             try
             {
@@ -25,16 +25,16 @@ namespace ATM10Updater.Managers
                 {
                     // Accept eula
                     var eulaTxtPath = $"{serverFiles.First()}\\eula.txt";
-                    string eulaContent = await File.ReadAllTextAsync(eulaTxtPath);
+                    string eulaContent = await File.ReadAllTextAsync(eulaTxtPath, token);
                     var acceptedEula = eulaContent.Replace("eula=false", "eula=true");
-                    await File.WriteAllTextAsync(eulaTxtPath, acceptedEula);
+                    await File.WriteAllTextAsync(eulaTxtPath, acceptedEula, token);
 
                     return;
                 }
 
                 var latestServerFolder = serverFiles.ElementAt(0);
                 var olderServerFolder = serverFiles.ElementAt(1);
-                
+
                 foreach (var content in _serverConfig.BackupFiles)
                 {
                     var oldFile = Path.Combine(olderServerFolder, content);
@@ -48,7 +48,7 @@ namespace ATM10Updater.Managers
                             continue;
                         }
 
-                        await CopyFolderAsync(oldFile, newDestFile);
+                        await CopyFolderAsync(oldFile, newDestFile, token);
                     }
                     else
                     {
@@ -58,10 +58,14 @@ namespace ATM10Updater.Managers
                             continue;
                         }
 
-                        await CopyFileAsync(oldFile, newDestFile);
+                        await CopyFileAsync(oldFile, newDestFile, token);
                     }
 
                 }
+            }
+            catch (OperationCanceledException) 
+            {
+                throw;
             }
             catch (IOException)
             {
@@ -69,7 +73,7 @@ namespace ATM10Updater.Managers
             }
         }
 
-        private async Task CopyFolderAsync(string sourceFolder, string destinationFolder)
+        private async Task CopyFolderAsync(string sourceFolder, string destinationFolder, CancellationToken token)
         {
             // Ensure source folder exists
             if (!Directory.Exists(sourceFolder))
@@ -88,7 +92,7 @@ namespace ATM10Updater.Managers
             {
                 string fileName = Path.GetFileName(file);
                 string destFilePath = Path.Combine(destinationFolder, fileName);
-                await CopyFileAsync(file, destFilePath);
+                await CopyFileAsync(file, destFilePath, token);
             }
 
             // Recursively copy all subfolders
@@ -96,16 +100,16 @@ namespace ATM10Updater.Managers
             {
                 string folderName = Path.GetFileName(subFolder);
                 string destSubFolder = Path.Combine(destinationFolder, folderName);
-                await CopyFolderAsync(subFolder, destSubFolder);
+                await CopyFolderAsync(subFolder, destSubFolder, token);
             }
         }
 
-        private async Task CopyFileAsync(string sourceFile, string destinationFile)
+        private async Task CopyFileAsync(string sourceFile, string destinationFile, CancellationToken token)
         {
             using var sourceStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous | FileOptions.SequentialScan);
             using var destinationStream = new FileStream(destinationFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.Asynchronous | FileOptions.SequentialScan);
             logger.LogInformation("Copy files : [{from}] -> [{to}]", sourceFile, destinationFile);
-            await sourceStream.CopyToAsync(destinationStream);
+            await sourceStream.CopyToAsync(destinationStream, token);
         }
     }
 }
