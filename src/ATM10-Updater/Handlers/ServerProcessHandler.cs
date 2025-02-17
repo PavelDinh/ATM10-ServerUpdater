@@ -14,9 +14,11 @@ namespace ATM10Updater.Handlers
 
         public void StartProcess()
         {
+            var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
+            AddPermissionToRunScript(_serverConfig.ServerRunFile, serverFiles.First());
+
             EnsureProcessTerminated();
 
-            var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = Path.Combine(serverFiles.First(), _serverConfig.ServerRunFile),
@@ -30,13 +32,15 @@ namespace ATM10Updater.Handlers
         public async Task StartWarmupProcessAsync(CancellationToken token)
         {
             using var cts = new CancellationTokenSource();
-            var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
 
             if (string.IsNullOrEmpty(_serverConfig.ServerStartupFile))
             {
                 return;
             }
             
+            var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
+            AddPermissionToRunScript(_serverConfig.ServerStartupFile, serverFiles.First());
+
             EnsureProcessTerminated();
 
             _process = new Process
@@ -114,9 +118,31 @@ namespace ATM10Updater.Handlers
                     }
                 }
             }
-            catch(InvalidOperationException)
+            catch (InvalidOperationException)
             {
                 // process has been disposed.
+            }
+        }
+
+        /// <summary>
+        /// Use only in Linux environment
+        /// </summary>
+        /// <param name="scriptName"></param>
+        private void AddPermissionToRunScript(string scriptName, string serverVersionPath)
+        {
+            if (scriptName.Contains(".sh"))
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = $"-c \"chmod +x {_serverConfig.LocalServerFolder}/{serverVersionPath}/{scriptName}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using var permissionProcess = new Process { StartInfo = psi };
+                permissionProcess.Start();
+                permissionProcess.WaitForExit();
             }
         }
 
