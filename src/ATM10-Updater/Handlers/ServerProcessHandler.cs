@@ -14,6 +14,8 @@ namespace ATM10Updater.Handlers
 
         public void StartProcess()
         {
+            AddPermissionToRunScript(_serverConfig.ServerRunFile);
+
             EnsureProcessTerminated();
 
             var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
@@ -36,7 +38,9 @@ namespace ATM10Updater.Handlers
             {
                 return;
             }
-            
+
+            AddPermissionToRunScript(_serverConfig.ServerStartupFile);
+
             EnsureProcessTerminated();
 
             _process = new Process
@@ -114,9 +118,31 @@ namespace ATM10Updater.Handlers
                     }
                 }
             }
-            catch(InvalidOperationException)
+            catch (InvalidOperationException)
             {
                 // process has been disposed.
+            }
+        }
+
+        /// <summary>
+        /// Use only in Linux environment
+        /// </summary>
+        /// <param name="scriptName"></param>
+        private void AddPermissionToRunScript(string scriptName)
+        {
+            if (scriptName.Contains(".sh"))
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = $"-c \"chmod +x {_serverConfig.LocalServerFolder}/{scriptName}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using var permissionProcess = new Process { StartInfo = psi };
+                permissionProcess.Start();
+                permissionProcess.WaitForExit();
             }
         }
 
