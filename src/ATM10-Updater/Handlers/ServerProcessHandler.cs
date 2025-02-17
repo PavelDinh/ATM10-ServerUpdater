@@ -135,7 +135,7 @@ namespace ATM10Updater.Handlers
                 var psi = new ProcessStartInfo
                 {
                     FileName = "/bin/bash",
-                    Arguments = $"-c \"chmod +x {_serverConfig.LocalServerFolder}/{serverVersionPath}/{scriptName}\"",
+                    Arguments = $"-c \"chmod +x /{_serverConfig.LocalServerFolder}/{serverVersionPath}/{scriptName}\"",
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
