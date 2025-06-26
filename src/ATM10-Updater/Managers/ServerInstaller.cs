@@ -18,9 +18,9 @@ namespace ATM10Updater.Managers
             try
             {
                 var metadata = await metadataProvider.GetMetadataAsync(token);
-                string downloadFilePath = Path.Combine(serverInfo.Value.LocalServerFolder, Path.GetFileName(metadata.DownloadLink));
+                string downloadFilePath = Path.Combine(serverInfo.Value.LocalServerFolder, Path.GetFileName(metadata.DownloadUrl));
 
-                await fileDownloader.DownloadFileWithProgressAsync(metadata.DownloadLink, downloadFilePath, progress =>
+                await fileDownloader.DownloadFileWithProgressAsync(metadata.DownloadUrl, downloadFilePath, progress =>
                 {
                     logger.LogInformation("\rDownloaded {progress} [{bytesTransferred} / {totalByts}] - {estimatedCompletionTime}", 
                         $"{progress.ProgressPercentage:P2}", progress.BytesTransferred, progress.TotalBytes, progress.EstimatedTimeRemaining);
