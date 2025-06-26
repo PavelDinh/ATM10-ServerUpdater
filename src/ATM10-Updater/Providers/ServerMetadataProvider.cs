@@ -28,7 +28,7 @@ namespace ATM10Updater.Providers
 
             var downloadData = await curseForgeClient.GetDownloadFileAsync(modpackInfo.ModId, metadataInfo!.ServerId, token) ?? throw new NullReferenceException("Metadata was not successfully pulled from API");
             var downloadDataObject = JsonConvert.DeserializeObject<JObject>(downloadData)!;
-            metadataInfo.DownloadLink = downloadDataObject["data"]?.ToString()!;
+            metadataInfo.DownloadUrl = downloadDataObject["data"]?.ToString()!;
 
             return metadataInfo ?? throw new NullReferenceException("Metadata was not successfully pulled from API");
         }
