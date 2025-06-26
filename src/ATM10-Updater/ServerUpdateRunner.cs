@@ -30,15 +30,12 @@ namespace ATM10Updater
 
                 var downloadFilePath = await serverInstaller.InstallAsync(token);
                 await fileExtractor.ExtractAndRenameServerFolder(downloadFilePath, serverInfo.Value.LocalServerFolder, serverInfo.Value.NamingConvention);
-
                 await processHandler.StartWarmupProcessAsync(token);
                 await backupHandler.LoadBackupAsync(token);
                 await discordHandler.SendNotificationAsync(token, serverInfo.Value.CustomDomain);
             }
 
-            logger.LogInformation("Starting server.");
-
-            processHandler.StartProcess();
+            logger.LogInformation("Server installed");
         }
     }
 }
