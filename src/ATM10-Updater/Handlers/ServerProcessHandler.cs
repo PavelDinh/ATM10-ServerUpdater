@@ -14,15 +14,20 @@ namespace ATM10Updater.Handlers
 
         public void StartProcess()
         {
-            var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
-            AddPermissionToRunScript(_serverConfig.ServerRunFile, serverFiles.First());
+            if (!TryGetLatestServerFolder(out var latestServerFolder))
+            {
+                Console.WriteLine("No server folders found. Cannot start server process.");
+                return;
+            }
+
+            AddPermissionToRunScript(_serverConfig.ServerRunFile, latestServerFolder);
 
             EnsureProcessTerminated();
 
             var processStartInfo = new ProcessStartInfo
             {
-                FileName = Path.Combine(serverFiles.First(), _serverConfig.ServerRunFile),
-                WorkingDirectory = serverFiles.First(),
+                FileName = Path.Combine(latestServerFolder, _serverConfig.ServerRunFile),
+                WorkingDirectory = latestServerFolder,
                 UseShellExecute = false
             };
 
@@ -38,8 +43,13 @@ namespace ATM10Updater.Handlers
                 return;
             }
             
-            var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
-            AddPermissionToRunScript(_serverConfig.ServerStartupFile, serverFiles.First());
+            if (!TryGetLatestServerFolder(out var latestServerFolder))
+            {
+                Console.WriteLine("No server folders found. Skipping warmup process.");
+                return;
+            }
+
+            AddPermissionToRunScript(_serverConfig.ServerStartupFile, latestServerFolder);
 
             EnsureProcessTerminated();
 
@@ -47,7 +57,7 @@ namespace ATM10Updater.Handlers
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = Path.Combine(serverFiles.First(), _serverConfig.ServerStartupFile),
+                    FileName = Path.Combine(latestServerFolder, _serverConfig.ServerStartupFile),
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -147,11 +157,18 @@ namespace ATM10Updater.Handlers
             }
         }
 
+        private bool TryGetLatestServerFolder(out string latestServerFolder)
+        {
+            var serverFiles = serverFileProvider.GetServerFilesSortedByVersion().ToList();
+            latestServerFolder = serverFiles.FirstOrDefault() ?? string.Empty;
+            return !string.IsNullOrWhiteSpace(latestServerFolder);
+        }
+
         private static async Task MonitorOutputAsync(StreamReader reader, string terminateOnText, CancellationToken token)
         {
             try
             {
-                string line;
+                string? line;
                 while ((line = await reader.ReadLineAsync(token)) != null)
                 {
                     Console.WriteLine(line);

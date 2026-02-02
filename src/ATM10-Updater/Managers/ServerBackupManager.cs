@@ -19,9 +19,15 @@ namespace ATM10Updater.Managers
             {
                 serverProcess.EnsureProcessTerminated();
 
-                var serverFiles = serverFileProvider.GetServerFilesSortedByVersion();
+                var serverFiles = serverFileProvider.GetServerFilesSortedByVersion().ToList();
 
-                if (serverFiles.Count() == 1)
+                if (serverFiles.Count == 0)
+                {
+                    logger.LogWarning("No server folders found. Skipping backup load.");
+                    return;
+                }
+
+                if (serverFiles.Count == 1)
                 {
                     // Accept eula
                     var eulaTxtPath = $"{serverFiles.First()}\\eula.txt";
