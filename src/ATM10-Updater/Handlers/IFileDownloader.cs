@@ -2,6 +2,6 @@
 {
     public interface IFileDownloader
     {
-        Task DownloadFileWithProgressAsync(string fileUrl, string destinationPath, Action<double> reportProgress);
+        Task DownloadFileWithProgressAsync(string fileUrl, string destinationPath, Action<DownloadProgress> reportProgress, CancellationToken token, int bufferSize = 8192);
     }
 }

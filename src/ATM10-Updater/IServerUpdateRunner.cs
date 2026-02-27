@@ -2,6 +2,6 @@
 {
     internal interface IServerUpdateRunner
     {
-        Task RunAsync();
+        Task RunAsync(CancellationToken token);
     }
 }

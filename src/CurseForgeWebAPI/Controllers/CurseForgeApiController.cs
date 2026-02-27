@@ -15,7 +15,7 @@ namespace CurseForgeWebAPI.Controllers
         {
             try
             {
-                var modInfo = await curseForgeClient.GetModAsync(modId);
+                var modInfo = await curseForgeClient.GetModAsync(modId, default);
                 return Content(modInfo, "application/json");
             }
             catch (Exception ex)
@@ -29,7 +29,7 @@ namespace CurseForgeWebAPI.Controllers
         {
             try
             {
-                var files = await curseForgeClient.GetModFilesAsync(modId);
+                var files = await curseForgeClient.GetModFilesAsync(modId, default);
                 return Content(files, "application/json");
             }
             catch (Exception ex)
@@ -43,7 +43,7 @@ namespace CurseForgeWebAPI.Controllers
         {
             try
             {
-                var changelog = await curseForgeClient.GetModFileChangelogAsync(modId, fileId);
+                var changelog = await curseForgeClient.GetModFileChangelogAsync(modId, fileId, default);
                 return Content(changelog, "application/json");
             }
             catch (Exception ex)
@@ -57,7 +57,7 @@ namespace CurseForgeWebAPI.Controllers
         {
             try
             {
-                var downloadUrl = await curseForgeClient.GetDownloadFileAsync(modId, fileId);
+                var downloadUrl = await curseForgeClient.GetDownloadFileAsync(modId, fileId, default);
                 return Content(downloadUrl, "application/json");
             }
             catch (Exception ex)

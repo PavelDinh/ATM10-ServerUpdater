@@ -6,7 +6,7 @@
         /// Downloads latest version of the modpack server files
         /// </summary>
         /// <returns>Path where it was downloaded</returns>
-        Task<string> InstallAsync();
+        Task<string> InstallAsync(CancellationToken token);
 
         bool IsNewVersionAvailable();
     }

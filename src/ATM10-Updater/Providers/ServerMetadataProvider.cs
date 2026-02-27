@@ -7,26 +7,41 @@ using Newtonsoft.Json.Linq;
 
 namespace ATM10Updater.Providers
 {
-    public class ServerMetadataProvider
+    public class ServerMetadataProvider(IOptions<ModpackConfig> modpackInfo, ICurseForgeClient curseForgeClient) 
         : IServerMetadataProvider
     {
-        private readonly ModMetadata? metadataInfo;
+        private readonly ModpackConfig modpackInfo = modpackInfo.Value;
+        private readonly ICurseForgeClient curseForgeClient = curseForgeClient;
+        private ModMetadata? metadataInfo;
 
-        public ServerMetadataProvider(IOptions<ModpackConfig> modpackInfo,ICurseForgeClient curseForgeClient)
+        public async ValueTask<ModMetadata> GetMetadataAsync(CancellationToken token)
         {
-            var modFilesData = curseForgeClient.GetModFilesAsync(modpackInfo.Value.ModId).GetAwaiter().GetResult() ?? throw new NullReferenceException("Metadata was not successfully pulled from API");
-            JObject modFilesObject = JsonConvert.DeserializeObject<JObject>(modFilesData);
+            if (metadataInfo != null)
+            {
+                return metadataInfo;
+            }
+
+            var modFilesData = await curseForgeClient.GetModFilesAsync(modpackInfo.ModId, token) ?? throw new NullReferenceException("Metadata was not successfully pulled from API");
+            JObject modFilesObject = JsonConvert.DeserializeObject<JObject>(modFilesData)!;
             JToken firstElement = modFilesObject["data"]?.First!;
             metadataInfo = firstElement?.ToObject<ModMetadata>();
 
-            var downloadData = curseForgeClient.GetDownloadFileAsync(modpackInfo.Value.ModId, metadataInfo!.ServerId).GetAwaiter().GetResult() ?? throw new NullReferenceException("Metadata was not successfully pulled from API");
-            var downloadDataObject = JsonConvert.DeserializeObject<JObject>(downloadData);
-            metadataInfo.DownloadLink = downloadDataObject["data"]?.ToString()!;
+            var downloadData = await curseForgeClient.GetDownloadFileAsync(modpackInfo.ModId, metadataInfo!.ServerId, token) ?? throw new NullReferenceException("Metadata was not successfully pulled from API");
+            var downloadDataObject = JsonConvert.DeserializeObject<JObject>(downloadData)!;
+            metadataInfo.DownloadUrl = downloadDataObject["data"]?.ToString()!;
+
+            return metadataInfo ?? throw new NullReferenceException("Metadata was not successfully pulled from API");
         }
 
         public ModMetadata GetMetadata()
         {
-            return metadataInfo ?? throw new NullReferenceException("Metadata was not successfully pulled from API");
+            if (metadataInfo == null)
+            {
+                var task = GetMetadataAsync(CancellationToken.None).AsTask();
+                metadataInfo = task.GetAwaiter().GetResult();
+            }
+
+            return metadataInfo;
         }
     }
 }

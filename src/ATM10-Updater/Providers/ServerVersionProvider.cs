@@ -11,13 +11,20 @@ namespace ATM10Updater.Providers
 
         public Version? GetLatestVersion()
         {
-            if (latestVersion == null)
+            try
             {
-                var metadata = serverMetadataProvider.GetMetadata();
-                latestVersion = ParseVersionFromFileName(Path.GetFileNameWithoutExtension(metadata.FileName));
-            }
+                if (latestVersion == null)
+                {
+                    var metadata = serverMetadataProvider.GetMetadata();
+                    latestVersion = ParseVersionFromFileName(Path.GetFileNameWithoutExtension(metadata.FileName));
+                }
 
-            return latestVersion;
+                return latestVersion;
+            }
+            catch (NullReferenceException)
+            {
+                throw;
+            }
         }
 
         public Version? GetCurrentVersion()
@@ -40,8 +47,23 @@ namespace ATM10Updater.Providers
 
         private static Version ParseVersionFromFileName(string fileName)
         {
-            var versionString = fileName.Split('-').Last();
-            return Version.Parse(versionString);
+            var parts = fileName.Split('-');
+            return ParseVersionRecursive(parts, parts.Length - 1);
+        }
+
+        private static Version ParseVersionRecursive(string[] parts, int index)
+        {
+            if (index < 0)
+            {
+                throw new FormatException($"No valid version string found in file name: {string.Join("-", parts)}");
+            }
+
+            if (Version.TryParse(parts[index], out var version))
+            {
+                return version;
+            }
+
+            return ParseVersionRecursive(parts, index - 1);
         }
     }
 }

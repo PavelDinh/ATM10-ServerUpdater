@@ -44,28 +44,28 @@ namespace CurseForgeAPI.Tests
         [Fact]
         public async Task GetDownloadFileAsync_Returns_DownloadLink()
         {
-            var result = await curseForgeClient.GetDownloadFileAsync(123, 123);
+            var result = await curseForgeClient.GetDownloadFileAsync(123, 123, default);
             Assert.Equal(content, result);
         }
 
         [Fact]
         public async Task GetModAsync_Returns_ModData()
         {
-            var result = await curseForgeClient.GetModAsync(123);
+            var result = await curseForgeClient.GetModAsync(123, default);
             Assert.Equal(content, result);
         }
 
         [Fact]
         public async Task GetModFileChangelogAsync_Returns_Changelog()
         {
-            var result = await curseForgeClient.GetModFileChangelogAsync(123, 123);
+            var result = await curseForgeClient.GetModFileChangelogAsync(123, 123, default);
             Assert.Equal(content, result);
         }
 
         [Fact]
         public async Task GetModFilesAsync_Returns_DownloadLink()
         {
-            var result = await curseForgeClient.GetModFilesAsync(123);
+            var result = await curseForgeClient.GetModFilesAsync(123, default);
             Assert.Equal(content, result);
         }
     }

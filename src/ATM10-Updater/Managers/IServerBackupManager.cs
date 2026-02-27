@@ -2,6 +2,6 @@
 {
     public interface IServerBackupManager
     {
-        Task LoadBackupAsync();
+        Task LoadBackupAsync(CancellationToken token);
     }
 }
